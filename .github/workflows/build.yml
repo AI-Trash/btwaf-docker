@@ -1,0 +1,61 @@
+name: Build and Push to GHCR
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # Run daily at 20:00 UTC (04:00 CST)
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare official packages and build context
+        run: |
+          chmod +x scripts/*.sh scripts/*.init scripts/*.py
+          ./scripts/prepare-build.sh
+          echo "WAF_VERSION=$(cat build-tmp/VERSION)" >> "$GITHUB_ENV"
+
+      - name: Build and push mysql image
+        run: |
+          IMAGE="ghcr.io/ai-trash/btwaf-docker/mysql"
+          docker build -f Dockerfile.mysql \
+            -t "${IMAGE}:latest" \
+            -t "${IMAGE}:${WAF_VERSION}" .
+          docker push "${IMAGE}:latest"
+          docker push "${IMAGE}:${WAF_VERSION}"
+
+      - name: Build and push nginx image
+        run: |
+          IMAGE="ghcr.io/ai-trash/btwaf-docker/nginx"
+          docker build -f Dockerfile.nginx \
+            -t "${IMAGE}:latest" \
+            -t "${IMAGE}:${WAF_VERSION}" .
+          docker push "${IMAGE}:latest"
+          docker push "${IMAGE}:${WAF_VERSION}"
+
+      - name: Build and push admin image
+        run: |
+          IMAGE="ghcr.io/ai-trash/btwaf-docker/admin"
+          docker build -f Dockerfile.admin \
+            -t "${IMAGE}:latest" \
+            -t "${IMAGE}:${WAF_VERSION}" .
+          docker push "${IMAGE}:latest"
+          docker push "${IMAGE}:${WAF_VERSION}"

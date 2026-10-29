@@ -1,0 +1,11 @@
+#!/bin/bash
+case "$1" in
+    *nginx_restart*|*reload*)
+        if [ -f /www/cloud_waf/nginx/logs/nginx.pid ]; then
+            kill -HUP $(cat /www/cloud_waf/nginx/logs/nginx.pid) 2>/dev/null || pkill -HUP -f "nginx: master" 2>/dev/null || true
+        else
+            pkill -HUP -f "nginx: master" 2>/dev/null || true
+        fi
+        ;;
+esac
+exit 0

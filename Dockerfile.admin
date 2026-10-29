@@ -1,0 +1,27 @@
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    procps \
+    python3 \
+    curl \
+    tar \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /www/cloud_waf
+
+COPY build-tmp/admin/console /www/cloud_waf/console
+COPY build-tmp/admin/wwwroot /www/cloud_waf/wwwroot
+COPY scripts/docker-shim.sh /usr/local/bin/docker
+COPY scripts/btw.init /www/cloud_waf/btw.init
+COPY scripts/ipfilter.py /www/cloud_waf/console/ipfilter
+COPY scripts/entrypoint-admin.sh /www/cloud_waf/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/docker \
+    /www/cloud_waf/btw.init \
+    /www/cloud_waf/console/CloudWaf \
+    /www/cloud_waf/console/ipfilter \
+    /www/cloud_waf/entrypoint.sh
+
+WORKDIR /www/cloud_waf/console
+ENTRYPOINT ["/www/cloud_waf/entrypoint.sh"]

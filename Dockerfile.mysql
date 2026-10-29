@@ -1,0 +1,9 @@
+FROM btwaf-mysql:latest
+
+COPY build-tmp/mysql/my.cnf /etc/mysql/conf.d/my.cnf
+COPY build-tmp/mysql/01_request_total.sql /docker-entrypoint-initdb.d/01_request_total.sql
+COPY build-tmp/mysql/02_btwaf_black.sql /docker-entrypoint-initdb.d/02_btwaf_black.sql
+
+RUN chmod 644 /etc/mysql/conf.d/my.cnf \
+    /docker-entrypoint-initdb.d/01_request_total.sql \
+    /docker-entrypoint-initdb.d/02_btwaf_black.sql

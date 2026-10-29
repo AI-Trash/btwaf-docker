@@ -1,0 +1,52 @@
+services:
+  cloudwaf_nginx:
+    image: ghcr.io/ai-trash/btwaf-docker/nginx:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./data/nginx/conf:/usr/local/openresty/nginx/conf
+      - ./data/nginx/conf.d:/etc/nginx
+      - ./data/nginx/logs:/usr/local/openresty/nginx/logs
+      - ./data/nginx/logs:/www/wwwlogs
+      - ./data/wwwroot:/www/wwwroot
+      - /etc/localtime:/etc/localtime:ro
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  cloudwaf_mysql:
+    image: ghcr.io/ai-trash/btwaf-docker/mysql:latest
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-WafDbPass2026}
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+
+  cloudwaf_admin:
+    image: ghcr.io/ai-trash/btwaf-docker/admin:latest
+    restart: unless-stopped
+    pid: "service:cloudwaf_nginx"
+    ports:
+      - "8379:8379"
+    environment:
+      - WAF_PORT=8379
+      - DB_HOST=cloudwaf_mysql
+      - DB_PORT=3306
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-WafDbPass2026}
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASS=${ADMIN_PASS:-WafAdmin@2026}
+      - ADMIN_PATH=${ADMIN_PATH:-wafadmin}
+    volumes:
+      - ./data/console/data:/www/cloud_waf/console/data
+      - ./data/console/ssl:/www/cloud_waf/console/ssl
+      - ./data/nginx/conf.d:/www/cloud_waf/nginx/conf.d
+      - ./data/nginx/logs:/www/cloud_waf/nginx/logs
+      - ./data/wwwroot:/www/wwwroot
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - cloudwaf_nginx
+      - cloudwaf_mysql

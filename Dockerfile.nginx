@@ -1,0 +1,8 @@
+FROM btwaf-openresty:latest
+
+COPY build-tmp/nginx-default /opt/cloudwaf-default
+COPY scripts/entrypoint-nginx.sh /entrypoint-nginx.sh
+
+RUN chmod +x /entrypoint-nginx.sh
+
+ENTRYPOINT ["/entrypoint-nginx.sh"]

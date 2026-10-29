@@ -1,0 +1,5 @@
+data/
+.env
+*.tar
+*.tar.gz
+build-tmp/
