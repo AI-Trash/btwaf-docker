@@ -112,25 +112,26 @@ docker compose up -d
 
 ```yaml
   cloudwaf_oauth2:
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    image: quay.io/oauth2-proxy/oauth2-proxy:latest
     restart: unless-stopped
     environment:
       - OAUTH2_PROXY_PROVIDER=oidc
-      - OAUTH2_PROXY_OIDC_ISSUER_URL=https://sso.example.com/realms/myrealm
-      - OAUTH2_PROXY_CLIENT_ID=waf-client
-      - OAUTH2_PROXY_CLIENT_SECRET=your-client-secret
-      - OAUTH2_PROXY_COOKIE_SECRET=0123456789abcdef0123456789abcdef
+      - OAUTH2_PROXY_OIDC_ISSUER_URL=${OAUTH2_ISSUER_URL}
+      - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_CLIENT_ID}
+      - OAUTH2_PROXY_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
+      - OAUTH2_PROXY_COOKIE_SECRET=${OAUTH2_COOKIE_SECRET}
       - OAUTH2_PROXY_HTTP_ADDRESS=0.0.0.0:4180
       - OAUTH2_PROXY_UPSTREAMS=static://202
       - OAUTH2_PROXY_REVERSE_PROXY=true
       - OAUTH2_PROXY_EMAIL_DOMAINS=*
       - OAUTH2_PROXY_OIDC_EMAIL_CLAIM=preferred_username
       - OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL=true
-      - OAUTH2_PROXY_COOKIE_DOMAINS=.example.com
-      - OAUTH2_PROXY_WHITELIST_DOMAINS=.example.com
+      - OAUTH2_PROXY_COOKIE_DOMAINS=${OAUTH2_COOKIE_DOMAINS}
+      - OAUTH2_PROXY_WHITELIST_DOMAINS=${OAUTH2_WHITELIST_DOMAINS}
       - OAUTH2_PROXY_COOKIE_SECURE=false
+      - OAUTH2_PROXY_COOKIE_SAMESITE=lax
       - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
-```
+      - OAUTH2_PROXY_SET_XAUTHREQUEST=true
 
 然后在宝塔云 WAF 网页后台点开需要开启前置登录的站点 $\rightarrow$ **【配置】 $\rightarrow$ 【自定义配置】**，填入一行即可开启：
 
