@@ -132,6 +132,7 @@ docker compose up -d
       - OAUTH2_PROXY_COOKIE_SAMESITE=lax
       - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
       - OAUTH2_PROXY_SET_XAUTHREQUEST=true
+```
 
 然后在宝塔云 WAF 网页后台点开需要开启前置登录的站点 $\rightarrow$ **【配置】 $\rightarrow$ 【自定义配置】**，填入一行即可开启：
 
