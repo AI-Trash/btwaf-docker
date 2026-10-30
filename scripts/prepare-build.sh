@@ -42,12 +42,12 @@ open("build-tmp/mysql/my.cnf", "w", encoding="utf-8").write("\n".join(clean_line
 {
     echo "CREATE DATABASE IF NOT EXISTS btwaf DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
     echo "USE btwaf;"
-    cat build-tmp/raw/nginx/conf.d/waf/inc/01_request_total.sql
+    cat build-tmp/raw/nginx/conf.d/waf/inc/request_total.sql
 } > build-tmp/mysql/01_request_total.sql
 
 {
     echo "USE btwaf;"
-    cat build-tmp/raw/nginx/conf.d/waf/inc/02_btwaf_black.sql
+    cat build-tmp/raw/nginx/conf.d/waf/inc/btwaf_black.sql
 } > build-tmp/mysql/02_btwaf_black.sql
 
 # 5. Prepare Nginx default template context
