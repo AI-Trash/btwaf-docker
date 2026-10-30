@@ -88,6 +88,8 @@ server {
 EOF
 
 echo "{}" > build-tmp/nginx-default/nginx/conf.d/other/siteid.json
+echo "{}" > build-tmp/nginx-default/nginx/conf.d/waf/config/site.json
+echo "[]" > build-tmp/nginx-default/nginx/conf.d/waf/config/domains.json
 
 cat << 'EOF' > build-tmp/nginx-default/nginx/conf.d/other/oauth.inc
 # Optional OAuth2 / OIDC Pre-Authentication (requires cloudwaf_oauth2 service)

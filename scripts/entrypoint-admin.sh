@@ -17,7 +17,11 @@ done
 
 # 2. Configure MySQL credentials for both Console and OpenResty Lua engine
 mkdir -p /www/cloud_waf/console/config
-echo -n "$DB_PASS" > /www/cloud_waf/nginx/conf.d/waf/mysql_default.pl
+if [ -s /www/cloud_waf/nginx/conf.d/waf/mysql_default.pl ]; then
+    DB_PASS=$(tr -d '\r\n' < /www/cloud_waf/nginx/conf.d/waf/mysql_default.pl)
+else
+    echo -n "$DB_PASS" > /www/cloud_waf/nginx/conf.d/waf/mysql_default.pl
+fi
 
 cat << EOF > /www/cloud_waf/console/config/mysql.json
 {
